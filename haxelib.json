@@ -1,0 +1,11 @@
+{
+  "name": "hxnodejs-smtp-server",
+  "url": "https://github.com/benmerckx/hxnodejs-smtp-server",
+  "description": "Extern definitions for smtp-server",
+  "license": "MIT",
+  "version": "0.0.0",
+  "releasenote": "",
+  "classPath": "src",
+  "contributors": ["benmerckx"],
+  "tags": ["js", "nodejs", "smtp", "net", "web", "extern"]
+}

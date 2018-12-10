@@ -3,6 +3,8 @@ package smtpserver;
 import js.Error;
 import js.node.Tls;
 import js.node.net.Server;
+import js.node.events.EventEmitter;
+import js.node.stream.Readable;
 import haxe.extern.EitherType;
 
 typedef SMTPServerAddress = {
@@ -18,7 +20,7 @@ typedef SMTPServerAddress = {
 
 enum abstract SMTPAuthenticationMethod(String) {
 	var PLAIN = 'PLAIN';
-	var LOGIN = 'LOGIN'
+	var LOGIN = 'LOGIN';
 	var XOAUTH2 = 'XOAUTH2';
 }
 
@@ -130,12 +132,6 @@ typedef SMTPServerOptions = TlsCreateServerOptions & {
     var ?secure: Bool;
     /** indicate an TLS server where TLS is handled upstream */
     var ?secured: Bool;
-    /** optional private keys in PEM format */
-    var ?key: Dynamic;
-    /** optional cert chains in PEM format */
-    var ?cert: Dynamic;
-    /** optionally override the trusted CA certificates */
-    var ?ca: Dynamic;
     /**
      * optional hostname of the server,
      * used for identifying to the client (defaults to os.hostname())
@@ -256,23 +252,23 @@ typedef SMTPServerOptions = TlsCreateServerOptions & {
     /**
      * the callback to validate MAIL FROM commands ([see details](https://github.com/andris9/smtp-server#validating-sender-addresses))
      */
-    var ?onMailFrom: (address: SMTPServerAddress, session: SMTPServerSession, callback: (?err: Error) -> Void): Void;
+    var ?onMailFrom: (address: SMTPServerAddress, session: SMTPServerSession, callback: (?err: Error) -> Void) -> Void;
     /**
      * The callback to validate RCPT TO commands ([see details](https://github.com/andris9/smtp-server#validating-recipient-addresses))
      */
-    var ?onRcptTo: (address: SMTPServerAddress, session: SMTPServerSession, callback: (?err: Error) -> Void): Void;
+    var ?onRcptTo: (address: SMTPServerAddress, session: SMTPServerSession, callback: (?err: Error) -> Void) -> Void;
     /**
      * the callback to handle incoming messages ([see details](https://github.com/andris9/smtp-server#processing-incoming-message))
      */
-    var ?onData: (stream: Readable, session: SMTPServerSession, callback: (?err: Error) -> Void): Void;
+    var ?onData: (stream: Readable<String>, session: SMTPServerSession, callback: (?err: Error) -> Void) -> Void;
     /**
      * the callback that informs about closed client connection
      */
-    var ?onClose: (session: SMTPServerSession, callback: (?err: Error) -> Void): Void;
+    var ?onClose: (session: SMTPServerSession, callback: (?err: Error) -> Void) -> Void;
 }
 
 @:jsRequire('smtp-server', 'SMTPServer')
-extern class SMTPServer extends EventEmitter {
+extern class SMTPServer extends EventEmitter<SMTPServer> {
     var options: SMTPServerOptions;
     var logger: Dynamic;
     var secureContext: js.Map<String, js.node.tls.SecureContext>;
@@ -298,15 +294,15 @@ extern class SMTPServer extends EventEmitter {
     function updateSecureContext(options: TlsCreateServerOptions): Void;
 
     /** Authentication handler. Override this */
-    function onAuth(auth: SMTPServerAuthentication, session: SMTPServerSession, callback: (?err: Error, ?response: SMTPServerAuthenticationResponse) -> Void): Void;
+    dynamic function onAuth(auth: SMTPServerAuthentication, session: SMTPServerSession, callback: (?err: Error, ?response: SMTPServerAuthenticationResponse) -> Void): Void;
     /** Override this */
-    function onClose(session: SMTPServerSession, callback: (?err: Error) -> Void): Void;
+    dynamic function onClose(session: SMTPServerSession, callback: (?err: Error) -> Void): Void;
     /** Override this */
-    function onConnect(session: SMTPServerSession, callback: (?err: Error) -> Void): Void;
+    dynamic function onConnect(session: SMTPServerSession, callback: (?err: Error) -> Void): Void;
     /** Override this */
-    function onData(stream: Readable, session: SMTPServerSession, callback: (?err: Error) -> Void): Void;
+    dynamic function onData(stream: Readable<String>, session: SMTPServerSession, callback: (?err: Error) -> Void): Void;
     /** Override this */
-    function onMailFrom(address: SMTPServerAddress, session: SMTPServerSession, callback: (?err: Error) -> Void): Void;
+    dynamic function onMailFrom(address: SMTPServerAddress, session: SMTPServerSession, callback: (?err: Error) -> Void): Void;
     /** Override this */
-    function onRcptTo(address: SMTPServerAddress, session: SMTPServerSession, callback: (?err: Error) -> Void): Void;
+    dynamic function onRcptTo(address: SMTPServerAddress, session: SMTPServerSession, callback: (?err: Error) -> Void): Void;
 }

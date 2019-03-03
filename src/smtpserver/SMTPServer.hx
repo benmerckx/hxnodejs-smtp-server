@@ -260,7 +260,7 @@ typedef SMTPServerOptions = TlsCreateServerOptions & {
     /**
      * the callback to handle incoming messages ([see details](https://github.com/andris9/smtp-server#processing-incoming-message))
      */
-    var ?onData: (stream: Readable<String>, session: SMTPServerSession, callback: (?err: Error) -> Void) -> Void;
+    var ?onData: (stream: IReadable, session: SMTPServerSession, callback: (?err: Error) -> Void) -> Void;
     /**
      * the callback that informs about closed client connection
      */
@@ -300,7 +300,7 @@ extern class SMTPServer extends EventEmitter<SMTPServer> {
     /** Override this */
     dynamic function onConnect(session: SMTPServerSession, callback: (?err: Error) -> Void): Void;
     /** Override this */
-    dynamic function onData(stream: Readable<String>, session: SMTPServerSession, callback: (?err: Error) -> Void): Void;
+    dynamic function onData(stream: IReadable, session: SMTPServerSession, callback: (?err: Error) -> Void): Void;
     /** Override this */
     dynamic function onMailFrom(address: SMTPServerAddress, session: SMTPServerSession, callback: (?err: Error) -> Void): Void;
     /** Override this */

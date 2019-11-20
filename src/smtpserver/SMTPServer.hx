@@ -271,8 +271,8 @@ typedef SMTPServerOptions = TlsCreateServerOptions & {
 extern class SMTPServer extends EventEmitter<SMTPServer> {
     var options: SMTPServerOptions;
     var logger: Dynamic;
-    var secureContext: js.Map<String, js.node.tls.SecureContext>;
-    var connections: js.Set<Dynamic>;
+    var secureContext: js.lib.Map<String, js.node.tls.SecureContext>;
+    var connections: js.lib.Set<Dynamic>;
     var server: Server;
 
     function new(?options: SMTPServerOptions);
